@@ -27,7 +27,16 @@ const bookingCollection=db.collection('booking')
 const app = express()
 const port=8000;
 
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",            // local client (Next.js/React)
+      "https://wanderlust-go.vercel.app",   // deployed client URL
+    ],
+    credentials: true, // cookie/auth header pathale lagbe
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  })
+);
 
 app.use(express.json())
 
@@ -70,6 +79,7 @@ app.post('/add-destination',VerifyUser,async (req,res)=>{
       res.send(result)
 })
 
+
 app.get('/destination',async(req,res)=>{
 
        const result=await destinationCollection.find().toArray();
@@ -77,7 +87,7 @@ app.get('/destination',async(req,res)=>{
        res.send(result)
 })
 
-app.get('/destination/:id',VerifyUser, async (req, res) => {
+app.get('/destination/:id', async (req, res) => {
 
        const id = req.params.id;
        if (!ObjectId.isValid(id)) {
@@ -92,7 +102,7 @@ app.get('/destination/:id',VerifyUser, async (req, res) => {
        res.send(result);
 })
 
-app.patch("/destination/:id", VerifyUser, async (req, res) => {
+app.patch("/destination/:id",  async (req, res) => {
   const { id } = req.params;
   const data = req.body;
   const result = await destinationCollection.updateOne(
@@ -102,7 +112,7 @@ app.patch("/destination/:id", VerifyUser, async (req, res) => {
   res.json(result);
 });
 
-app.delete("/destination/:id",VerifyUser,  async (req, res) => {
+app.delete("/destination/:id",  async (req, res) => {
   const { id } = req.params;
   const result = await destinationCollection.deleteOne(
     { _id: new ObjectId(id) },
